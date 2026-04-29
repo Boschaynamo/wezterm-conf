@@ -23,7 +23,7 @@ config.background = {
 		source = { Color = "#06080f" },
 		width = "100%",
 		height = "100%",
-		opacity = 0.95,
+		opacity = 0.97,
 	},
 
 	-- imagen arriba
@@ -78,8 +78,6 @@ config.cursor_blink_ease_out = "Constant"
 -- See: https://github.com/Gentleman-Programming/Gentleman.Dots/issues/117
 if wezterm.target_triple:find("windows") then
 	config.term = "xterm-256color"
-else
-	config.term = "wezterm"
 end
 config.enable_csi_u_key_encoding = true
 
@@ -105,53 +103,55 @@ config.send_composed_key_when_right_alt_is_pressed = false
 -- │                           GENTLEMAN THEME                                    │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 
-config.colors = {
-	-- Base Colors
-	foreground = "#f3f6f9",
-	background = "#06080f",
-
-	-- Cursor
-	cursor_bg = "#e0c15a",
-	cursor_fg = "#06080f",
-	cursor_border = "#e0c15a",
-
-	-- Selection
-	selection_fg = "#f3f6f9",
-	selection_bg = "#263356",
-
-	-- Normal Colors
-	ansi = {
-		"#06080f", -- black
-		"#cb7c94", -- red
-		"#b7cc85", -- green
-		"#ffe066", -- yellow
-		"#7fb4ca", -- blue
-		"#ff8dd7", -- magenta
-		"#7aa89f", -- cyan
-		"#f3f6f9", -- white
-	},
-
-	-- Bright Colors
-	brights = {
-		"#8a8fa3", -- black
-		"#de8fa8", -- red
-		"#d1e8a9", -- green
-		"#fff7b1", -- yellow
-		"#a3d4d5", -- blue
-		"#ffaeea", -- magenta
-		"#7fb4ca", -- cyan
-		"#f3f6f9", -- white
-	},
-}
+-- config.colors = {
+-- 	-- Base Colors
+-- 	foreground = "#f3f6f9",
+-- 	background = "#06080f",
+-- 
+-- 	-- Cursor
+-- 	cursor_bg = "#e0c15a",
+-- 	cursor_fg = "#06080f",
+-- 	cursor_border = "#e0c15a",
+-- 
+-- 	-- Selection
+-- 	selection_fg = "#f3f6f9",
+-- 	selection_bg = "#263356",
+-- 
+-- 	-- Normal Colors
+-- 	ansi = {
+-- 		"#06080f", -- black
+-- 		"#cb7c94", -- red
+-- 		"#b7cc85", -- green
+-- 		"#ffe066", -- yellow
+-- 		"#7fb4ca", -- blue
+-- 		"#ff8dd7", -- magenta
+-- 		"#7aa89f", -- cyan
+-- 		"#f3f6f9", -- white
+-- 	},
+-- 
+-- 	-- Bright Colors
+-- 	brights = {
+-- 		"#8a8fa3", -- black
+-- 		"#de8fa8", -- red
+-- 		"#d1e8a9", -- green
+-- 		"#fff7b1", -- yellow
+-- 		"#a3d4d5", -- blue
+-- 		"#ffaeea", -- magenta
+-- 		"#7fb4ca", -- cyan
+-- 		"#f3f6f9", -- white
+-- 	},
+-- }
+config.color_scheme = 'Chester'
 
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                            WINDOWS (WSL)                                     │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 
--- Uncomment for Windows/WSL:
-config.default_domain = "WSL:Ubuntu"
-config.front_end = "OpenGL"
-
+-- For Windows/WSL:
+if wezterm.target_triple:find("windows") then
+	config.default_domain = "WSL:Ubuntu"
+	config.front_end = "OpenGL"
+end
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                            KEY MAP                                           │
 -- └──────────────────────────────────────────────────────────────────────────────┘
