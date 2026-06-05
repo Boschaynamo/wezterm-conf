@@ -2,7 +2,6 @@
 -- ║                          GENTLEMAN DOTS - WEZTERM                            ║
 -- ║                           Optimized for Neovim                               ║
 -- ╚══════════════════════════════════════════════════════════════════════════════╝
-
 local wezterm = require("wezterm")
 local act = wezterm.action
 local config = {}
@@ -11,43 +10,16 @@ local config = {}
 -- │                                   FONT                                       │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 
-config.font = wezterm.font("JetBrains Mono")
-config.font_size = 14.0
+-- SF Mono (la fuente de Terminal.app). Instalada via Homebrew: font-sf-mono
+config.font = wezterm.font("SF Mono", { weight = "Regular" })
+config.font_size = 12.0
 
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                                  WINDOW                                      │
 -- └──────────────────────────────────────────────────────────────────────────────┘
-config.background = {
-	-- fondo base de la terminal
-	{
-		source = { Color = "#06080f" },
-		width = "100%",
-		height = "100%",
-		opacity = 0.97,
-	},
-
-	-- imagen arriba
-	{
-		source = {
-			File = "C:/Users/nico_/Desktop/frieren2.png",
-		},
-		opacity = 0.95,
-		hsb = {
-			brightness = 0.07,
-		},
-
-		horizontal_align = "Right",
-		vertical_align = "Bottom",
-
-		repeat_x = "NoRepeat",
-		repeat_y = "NoRepeat",
-
-		width = 250,
-		height = 200,
-	},
-}
-
-config.macos_window_background_blur = 20
+-- Look "Clear Dark" de Terminal.app: fondo solido translucido + blur (sin imagen)
+config.window_background_opacity = 0.90
+config.macos_window_background_blur = 30
 config.win32_system_backdrop = "Acrylic"
 
 config.window_padding = {
@@ -141,7 +113,39 @@ config.send_composed_key_when_right_alt_is_pressed = false
 -- 		"#f3f6f9", -- white
 -- 	},
 -- }
-config.color_scheme = 'Chester'
+-- Paleta "Clear Dark": fondo/texto del perfil + colores ANSI por defecto de Terminal.app
+config.colors = {
+	background = "#222733",
+	foreground = "#E0E0E0",
+
+	cursor_bg = "#E0E0E0",
+	cursor_fg = "#191D27",
+	cursor_border = "#E0E0E0",
+
+	selection_bg = "#3A4150",
+	selection_fg = "#E0E0E0",
+
+	ansi = {
+		"#000000", -- black
+		"#990000", -- red
+		"#00a600", -- green
+		"#999900", -- yellow
+		"#6e98b7", -- blue (valor que Terminal.app *muestra* tras su realce de legibilidad)
+		"#b200b2", -- magenta
+		"#00a6b2", -- cyan
+		"#bfbfbf", -- white
+	},
+	brights = {
+		"#666666", -- bright black
+		"#e50000", -- bright red
+		"#00d900", -- bright green
+		"#e5e500", -- bright yellow
+		"#0000ff", -- bright blue
+		"#e500e5", -- bright magenta
+		"#00e5e5", -- bright cyan
+		"#e5e5e5", -- bright white
+	},
+}
 
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                            WINDOWS (WSL)                                     │
