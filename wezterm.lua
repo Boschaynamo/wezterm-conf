@@ -18,7 +18,7 @@ config.font_size = 12.0
 -- │                                  WINDOW                                      │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 -- Look "Clear Dark" de Terminal.app: fondo solido translucido + blur (sin imagen)
-config.window_background_opacity = 0.90
+config.window_background_opacity = 0.95
 config.macos_window_background_blur = 30
 config.win32_system_backdrop = "Acrylic"
 
@@ -128,7 +128,7 @@ config.colors = {
 	ansi = {
 		"#000000", -- black
 		"#990000", -- red
-		"#00a600", -- green
+		"#00a653", -- green
 		"#999900", -- yellow
 		"#6e98b7", -- blue (valor que Terminal.app *muestra* tras su realce de legibilidad)
 		"#b200b2", -- magenta
@@ -140,7 +140,7 @@ config.colors = {
 		"#e50000", -- bright red
 		"#00d900", -- bright green
 		"#e5e500", -- bright yellow
-		"#0000ff", -- bright blue
+		"#0080ff", -- bright blue
 		"#e500e5", -- bright magenta
 		"#00e5e5", -- bright cyan
 		"#e5e5e5", -- bright white
