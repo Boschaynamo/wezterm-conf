@@ -5,22 +5,37 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local config = {}
+local is_macos = wezterm.target_triple:find("darwin") ~= nil
+local is_windows = wezterm.target_triple:find("windows") ~= nil
 --config.default_prog = { "powershell.exe" }
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                                   FONT                                       │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 
--- SF Mono (la fuente de Terminal.app). Instalada via Homebrew: font-sf-mono
-config.font = wezterm.font("SF Mono", { weight = "Regular" })
+-- Nerd Font principal y fallbacks disponibles por plataforma.
+config.font = wezterm.font_with_fallback({
+	{ family = "JetBrainsMono Nerd Font", weight = "Regular" },
+	"JetBrains Mono",
+	"Menlo",
+	"DejaVu Sans Mono",
+})
 config.font_size = 12.0
+
+-- Homebrew instala las fuentes del usuario aca; declararlo evita depender de
+-- que CoreText haya refrescado su cache antes de iniciar WezTerm.
+if is_macos then
+	config.font_dirs = { wezterm.home_dir .. "/Library/Fonts" }
+end
 
 -- ┌──────────────────────────────────────────────────────────────────────────────┐
 -- │                                  WINDOW                                      │
 -- └──────────────────────────────────────────────────────────────────────────────┘
 -- Look "Clear Dark" de Terminal.app: fondo solido translucido + blur (sin imagen)
 config.window_background_opacity = 0.90
-config.macos_window_background_blur = 30
-config.win32_system_backdrop = "Acrylic"
+if is_macos then
+	config.macos_window_background_blur = 20
+	config.front_end = "WebGpu" -- Metal on macOS
+end
 
 config.window_padding = {
 	top = 0,
@@ -48,7 +63,7 @@ config.cursor_blink_ease_out = "Constant"
 -- Terminal & Colors
 -- WSL doesn't have wezterm terminfo, so we use xterm-256color there
 -- See: https://github.com/Gentleman-Programming/Gentleman.Dots/issues/117
-if wezterm.target_triple:find("windows") then
+if is_windows then
 	config.term = "xterm-256color"
 end
 config.enable_csi_u_key_encoding = true
@@ -61,7 +76,7 @@ config.underline_position = -2
 config.scrollback_lines = 10000
 
 -- Performance
-config.max_fps = 165
+config.max_fps = 120
 
 -- Image support
 config.enable_kitty_graphics = true
@@ -79,16 +94,16 @@ config.send_composed_key_when_right_alt_is_pressed = false
 -- 	-- Base Colors
 -- 	foreground = "#f3f6f9",
 -- 	background = "#06080f",
--- 
+--
 -- 	-- Cursor
 -- 	cursor_bg = "#e0c15a",
 -- 	cursor_fg = "#06080f",
 -- 	cursor_border = "#e0c15a",
--- 
+--
 -- 	-- Selection
 -- 	selection_fg = "#f3f6f9",
 -- 	selection_bg = "#263356",
--- 
+--
 -- 	-- Normal Colors
 -- 	ansi = {
 -- 		"#06080f", -- black
@@ -100,7 +115,7 @@ config.send_composed_key_when_right_alt_is_pressed = false
 -- 		"#7aa89f", -- cyan
 -- 		"#f3f6f9", -- white
 -- 	},
--- 
+--
 -- 	-- Bright Colors
 -- 	brights = {
 -- 		"#8a8fa3", -- black
@@ -152,7 +167,7 @@ config.colors = {
 -- └──────────────────────────────────────────────────────────────────────────────┘
 
 -- For Windows/WSL:
-if wezterm.target_triple:find("windows") then
+if is_windows then
 	config.default_domain = "WSL:Ubuntu"
 	config.front_end = "OpenGL"
 end
@@ -192,6 +207,27 @@ config.keys = {
 
 	-- Cerrar pane actual
 	{ key = "x", mods = "ALT", action = act.CloseCurrentPane({ confirm = true }) },
+
+	-- Mover por palabra (Option + flechas) en el shell/readline
+	{ key = "LeftArrow", mods = "ALT", action = act.SendString("\x1bb") }, -- ESC b -> backward-word
+	{ key = "RightArrow", mods = "ALT", action = act.SendString("\x1bf") }, -- ESC f -> forward-word
+
+	-- Borrar palabra (Option + Backspace)
+	{ key = "Backspace", mods = "ALT", action = act.SendString("\x17") }, -- Ctrl-W
+
+	-- Inicio / fin de linea (Home / End, o Fn + flechas en MacBook)
+	{ key = "Home", mods = "NONE", action = act.SendString("\x01") }, -- Ctrl-A -> beginning-of-line
+	{ key = "End", mods = "NONE", action = act.SendString("\x05") }, -- Ctrl-E -> end-of-line
+
 }
+
+-- CMD no existe de forma consistente fuera de macOS.
+if is_macos then
+	table.insert(config.keys, {
+		key = "Backspace",
+		mods = "CMD",
+		action = act.SendString("\x15"), -- Ctrl-U
+	})
+end
 
 return config
