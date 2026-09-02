@@ -62,5 +62,5 @@ if (( ! SKIP_PACKAGES )); then
 else echo "Instalacion de paquetes omitida."; fi
 link_config "$repo_dir/zshrc" "$HOME/.zshrc"
 link_config "$repo_dir/starship.toml" "$HOME/.config/starship.toml"
-if [[ "$repo_dir" != "$HOME/.config/wezterm" ]]; then link_config "$repo_dir/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"; else echo "WezTerm ya usa este repo."; fi
+if [[ "$repo_dir" != "$(cd "$HOME/.config/wezterm" 2>/dev/null && pwd -P)" ]]; then link_config "$repo_dir/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"; else echo "WezTerm ya usa este repo."; fi
 echo "Listo. Abri otra terminal o ejecuta: exec zsh"
