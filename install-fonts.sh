@@ -1,39 +1,32 @@
 #!/usr/bin/env bash
-# Instala la fuente SF Mono (la que usa wezterm.lua) en Linux.
-#
-# SF Mono es propietaria de Apple, por eso NO se commitea al repo.
-#   - macOS:  brew install --cask font-sf-mono
-#   - Linux:  ./install-fonts.sh   (este script la descarga e instala)
-#
-# Fuente: repo comunitario con los .otf extraidos del instalador oficial.
 set -euo pipefail
+DRY_RUN=0
+[[ "${1:-}" == --dry-run ]] && DRY_RUN=1 || { [[ $# -eq 0 ]] || { echo "Uso: $0 [--dry-run]" >&2; exit 2; }; }
+run() { printf '+ '; printf '%q ' "$@"; echo; (( DRY_RUN )) || "$@"; }
 
-FONT_DIR="${HOME}/.local/share/fonts"
-ARCHIVE_URL="https://github.com/supercomputra/SF-Mono-Font/archive/refs/heads/master.zip"
-TMP_DIR="$(mktemp -d)"
-trap 'rm -rf "${TMP_DIR}"' EXIT
-
-if fc-list : family | grep -i "sf mono" >/dev/null 2>&1; then
-	echo "SF Mono ya esta instalada. Nada que hacer."
-	exit 0
-fi
-
-echo "Descargando SF Mono..."
-curl -sL --max-time 120 -o "${TMP_DIR}/sfmono.zip" "${ARCHIVE_URL}"
-
-echo "Extrayendo..."
-unzip -o -q "${TMP_DIR}/sfmono.zip" -d "${TMP_DIR}"
-
-echo "Instalando en ${FONT_DIR}..."
-install -d "${FONT_DIR}"
-find "${TMP_DIR}" -iname "SFMono-*.otf" -exec cp {} "${FONT_DIR}/" \;
-
-echo "Refrescando cache de fuentes..."
-fc-cache -f "${FONT_DIR}" >/dev/null
-
-if fc-list : family | grep -i "sf mono" >/dev/null 2>&1; then
-	echo "Listo. SF Mono instalada. Reinicia WezTerm (o Ctrl+Shift+R)."
-else
-	echo "ERROR: la instalacion no quedo registrada." >&2
-	exit 1
-fi
+case "$(uname -s)" in
+  Darwin)
+    command -v brew >/dev/null || { echo "Error: Homebrew es necesario." >&2; exit 1; }
+    if brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
+      echo "JetBrainsMono Nerd Font ya esta instalada."; exit 0
+    fi
+    run brew install --cask font-jetbrains-mono-nerd-font
+    ;;
+  Linux)
+    if command -v fc-list >/dev/null && fc-list : family 2>/dev/null | grep -Eqi 'JetBrainsMono Nerd Font|JetBrainsMono NF'; then
+      echo "JetBrainsMono Nerd Font ya esta instalada."; exit 0
+    fi
+    command -v curl >/dev/null && command -v tar >/dev/null || { echo "Error: faltan curl o tar." >&2; exit 1; }
+    font_dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts/JetBrainsMonoNerdFont"
+    url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
+    if (( DRY_RUN )); then
+      echo "+ descargar $url, extraer TTF en $font_dir y ejecutar fc-cache"; exit 0
+    fi
+    tmp_dir="$(mktemp -d)"; trap 'rm -rf "$tmp_dir"' EXIT
+    run curl -fL --retry 3 --connect-timeout 15 -o "$tmp_dir/font.tar.xz" "$url"
+    run mkdir -p "$font_dir"
+    run tar -xJf "$tmp_dir/font.tar.xz" -C "$font_dir" --wildcards '*.ttf'
+    run fc-cache -f "$font_dir"
+    ;;
+  *) echo "Sistema no soportado." >&2; exit 1 ;;
+esac
